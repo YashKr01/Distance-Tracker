@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
-import com.example.distancetracker.Permissions.hasLocationPermission
-import com.example.distancetracker.Permissions.requestLocationPermission
+import com.example.distancetracker.util.Permissions.hasLocationPermission
+import com.example.distancetracker.util.Permissions.requestLocationPermission
 import com.example.distancetracker.databinding.FragmentPermissionBinding
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
@@ -58,8 +58,8 @@ class PermissionFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         findNavController().navigate(R.id.action_permissionFragment_to_mapsFragment)
     }
 
-    override fun onDestroyOptionsMenu() {
-        super.onDestroyOptionsMenu()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 
