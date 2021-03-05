@@ -1,4 +1,4 @@
-package com.example.distancetracker
+package com.example.distancetracker.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.example.distancetracker.R
 import com.example.distancetracker.databinding.FragmentMapsBinding
 import com.example.distancetracker.service.TrackerService
 import com.example.distancetracker.util.Constants.ACTION_SERVICE_START
@@ -20,19 +21,14 @@ import com.example.distancetracker.util.ExtensionFunctions.show
 import com.example.distancetracker.util.Permissions.hasBackgroundLocationPermission
 import com.example.distancetracker.util.Permissions.requestBackgroundLocationPermission
 
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@AndroidEntryPoint
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener,
     EasyPermissions.PermissionCallbacks {
 
@@ -84,7 +80,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             override fun onFinish() {
                 sendActionCommandToService(ACTION_SERVICE_START)
                 binding.timerTextView.hide()
-
             }
 
             override fun onTick(millisUntilFinished: Long) {
