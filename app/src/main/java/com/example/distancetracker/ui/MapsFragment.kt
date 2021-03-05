@@ -2,6 +2,7 @@ package com.example.distancetracker.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
@@ -19,13 +20,19 @@ import com.example.distancetracker.util.Constants.ACTION_SERVICE_START
 import com.example.distancetracker.util.ExtensionFunctions.disable
 import com.example.distancetracker.util.ExtensionFunctions.hide
 import com.example.distancetracker.util.ExtensionFunctions.show
+import com.example.distancetracker.util.MapUtil
+import com.example.distancetracker.util.MapUtil.setCameraPosition
 import com.example.distancetracker.util.Permissions.hasBackgroundLocationPermission
 import com.example.distancetracker.util.Permissions.requestBackgroundLocationPermission
+import com.google.android.gms.maps.CameraUpdateFactory
 
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.ButtCap
+import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolylineOptions
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import kotlinx.coroutines.delay
@@ -172,12 +179,37 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         observeTrackerService()
     }
 
+    private fun followPolyLine() {
+        if (locationList.isNotEmpty()) {
+            map.animateCamera(
+                CameraUpdateFactory.newCameraPosition(setCameraPosition(locationList.last())),
+                100,
+                null
+            )
+        }
+    }
+
     private fun observeTrackerService() {
         TrackerService.locationList.observe(viewLifecycleOwner, {
             if (it != null) {
                 locationList = it
+                drawPolyline()
+                followPolyLine()
             }
         })
+    }
+
+    private fun drawPolyline() {
+        var polyLine = map.addPolyline(
+            PolylineOptions().apply {
+                width(10f)
+                color(Color.BLUE)
+                jointType(JointType.ROUND)
+                startCap(ButtCap())
+                endCap(ButtCap())
+                addAll(locationList)
+            }
+        )
     }
 
     override fun onDestroyView() {
