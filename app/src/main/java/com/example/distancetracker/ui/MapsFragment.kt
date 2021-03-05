@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import com.example.distancetracker.R
 import com.example.distancetracker.databinding.FragmentMapsBinding
 import com.example.distancetracker.service.TrackerService
@@ -24,6 +25,7 @@ import com.example.distancetracker.util.Permissions.requestBackgroundLocationPer
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import kotlinx.coroutines.delay
@@ -34,6 +36,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
 
     private var _binding: FragmentMapsBinding? = null
     private val binding get() = _binding!!
+
+    private var locationList = mutableListOf<LatLng>()
 
     private lateinit var map: GoogleMap
 
@@ -165,6 +169,15 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
             isScrollGesturesEnabled = false
         }
 
+        observeTrackerService()
+    }
+
+    private fun observeTrackerService() {
+        TrackerService.locationList.observe(viewLifecycleOwner, {
+            if (it != null) {
+                locationList = it
+            }
+        })
     }
 
     override fun onDestroyView() {
