@@ -1,6 +1,7 @@
 package com.example.distancetracker
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
@@ -11,6 +12,8 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.distancetracker.databinding.FragmentMapsBinding
+import com.example.distancetracker.service.TrackerService
+import com.example.distancetracker.util.Constants.ACTION_SERVICE_START
 import com.example.distancetracker.util.ExtensionFunctions.disable
 import com.example.distancetracker.util.ExtensionFunctions.hide
 import com.example.distancetracker.util.ExtensionFunctions.show
@@ -25,9 +28,11 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener,
     EasyPermissions.PermissionCallbacks {
 
@@ -77,7 +82,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
 
         val timer: CountDownTimer = object : CountDownTimer(4000, 1000) {
             override fun onFinish() {
+                sendActionCommandToService(ACTION_SERVICE_START)
                 binding.timerTextView.hide()
+
             }
 
             override fun onTick(millisUntilFinished: Long) {
@@ -108,6 +115,16 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
 
         timer.start()
 
+    }
+
+    private fun sendActionCommandToService(action: String) {
+        Intent(
+            requireContext(),
+            TrackerService::class.java
+        ).apply {
+            this.action = action
+            requireActivity().startService(this)
+        }
     }
 
     override fun onRequestPermissionsResult(
