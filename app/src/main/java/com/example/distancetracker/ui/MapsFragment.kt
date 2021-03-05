@@ -17,7 +17,9 @@ import com.example.distancetracker.R
 import com.example.distancetracker.databinding.FragmentMapsBinding
 import com.example.distancetracker.service.TrackerService
 import com.example.distancetracker.util.Constants.ACTION_SERVICE_START
+import com.example.distancetracker.util.Constants.ACTION_SERVICE_STOP
 import com.example.distancetracker.util.ExtensionFunctions.disable
+import com.example.distancetracker.util.ExtensionFunctions.enable
 import com.example.distancetracker.util.ExtensionFunctions.hide
 import com.example.distancetracker.util.ExtensionFunctions.show
 import com.example.distancetracker.util.MapUtil
@@ -60,7 +62,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         }
 
         binding.stopButton.setOnClickListener {
-
+            onStopButtonClicked()
         }
 
         binding.resetButton.setOnClickListener {
@@ -81,6 +83,17 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         } else {
             requestBackgroundLocationPermission(this)
         }
+    }
+
+    private fun onStopButtonClicked() {
+        stopForegroundService()
+        binding.stopButton.hide()
+        binding.startButton.show()
+    }
+
+    private fun stopForegroundService() {
+        binding.startButton.disable()
+        sendActionCommandToService(ACTION_SERVICE_STOP)
     }
 
     private fun startCountDown() {
@@ -193,6 +206,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMyLocationButto
         TrackerService.locationList.observe(viewLifecycleOwner, {
             if (it != null) {
                 locationList = it
+                if (locationList.size > 1) {
+                    binding.stopButton.enable()
+                }
                 drawPolyline()
                 followPolyLine()
             }
