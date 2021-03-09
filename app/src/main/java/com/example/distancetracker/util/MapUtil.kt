@@ -24,6 +24,7 @@ object MapUtil {
     }
 
     fun calculateTheDistance(locationList: MutableList<LatLng>): String {
+
         if(locationList.size > 1){
             val meters =
                 SphericalUtil.computeDistanceBetween(locationList.first(), locationList.last())
@@ -31,6 +32,7 @@ object MapUtil {
             return DecimalFormat("#.##").format(kilometers)
         }
         return "0.00"
+
     }
 
 }

@@ -19,6 +19,8 @@ import com.example.distancetracker.util.Constants.LOCATION_UPDATE_INTERVAL
 import com.example.distancetracker.util.Constants.NOTIFICATION_CHANNEL_ID
 import com.example.distancetracker.util.Constants.NOTIFICATION_CHANNEL_NAME
 import com.example.distancetracker.util.Constants.NOTIFICATION_ID
+import com.example.distancetracker.util.MapUtil
+import com.example.distancetracker.util.MapUtil.calculateTheDistance
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,10 +58,19 @@ class TrackerService : LifecycleService() {
             result?.locations?.let { locations ->
                 for (location in locations) {
                     updateLocationList(location)
+                    updateNotification()
                 }
             }
         }
 
+    }
+
+    private fun updateNotification() {
+        notification.apply {
+            setContentTitle("Distance Travelled")
+            setContentText(locationList.value?.let { calculateTheDistance(it) } + "km")
+        }
+        notificationManager.notify(NOTIFICATION_ID, notification.build())
     }
 
     private fun updateLocationList(location: Location) {
